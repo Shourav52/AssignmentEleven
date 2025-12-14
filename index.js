@@ -27,30 +27,39 @@ async function run() {
         await client.connect();
         // Send a ping to confirm a successful connection
         const database = client.db("assignment11");
-         const userCollection = database.collection("users");
-         const donationColections = database.collection("donation");
+        const userCollection = database.collection("users");
+        const donationColections = database.collection("donation");
 
-         app.post('/users',async(req,res)=>{
+        app.post('/users', async (req, res) => {
             const userInfo = req.body;
             userInfo.role = 'buyer';
             userInfo.createdAt = new Date();
             const result = await userCollection.insertOne(userInfo);
             res.send(result);
-         })
+        })
 
-        app.get('/users/role/:email',async(req,res)=>{
-            const {email} = req.params;
-            const query = {email:email};
+        app.get('/users/role/:email', async (req, res) => {
+            const { email } = req.params;
+            const query = { email: email };
             const result = await userCollection.findOne(query);
             res.send(result);
         })
 
-        app.post('/donations', async(req,res)=>{
-            const data =req.body;
+        app.post('/donations', async (req, res) => {
+            const data = req.body;
             data.createdAt = new Date();
             const result = await donationColections.insertOne(data)
             res.send(result)
         })
+
+        app.get('/doner/donations/:email', async (req, res) => {
+            const result = await donationColections
+                .find({ donorEmail: req.params.email })
+                .toArray();
+            res.send(result);
+        });
+
+
 
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
