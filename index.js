@@ -28,6 +28,8 @@ async function run() {
         // Send a ping to confirm a successful connection
         const database = client.db("assignment11");
          const userCollection = database.collection("users");
+         const donationColections = database.collection("donation");
+
          app.post('/users',async(req,res)=>{
             const userInfo = req.body;
             userInfo.role = 'buyer';
@@ -41,6 +43,13 @@ async function run() {
             const query = {email:email};
             const result = await userCollection.findOne(query);
             res.send(result);
+        })
+
+        app.post('/donations', async(req,res)=>{
+            const data =req.body;
+            data.createdAt = new Date();
+            const result = await donationColections.insertOne(data)
+            res.send(result)
         })
 
         await client.db("admin").command({ ping: 1 });
