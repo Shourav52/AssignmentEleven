@@ -64,12 +64,31 @@ async function run() {
             const result = await userCollection.insertOne(userInfo);
             res.send(result);
         })
+         
+        app.get('/users', async(req, res)=>{
+            const result = await userCollection.find().toArray();
+            res.status(200).send(result)
+        })
+
 
         app.get('/users/role/:email', async (req, res) => {
             const { email } = req.params;
             const query = { email: email };
             const result = await userCollection.findOne(query);
             res.send(result);
+        })
+
+        app.patch('/update/user/status', async(req, res)=>{
+            const {email,status} = req.query;
+            const query ={ email:email};
+
+            const updateStatus ={
+                $set: {
+                    status: status
+                }
+            }
+            const result = await userCollection.updateOne(query,updateStatus)
+            res.send(result)
         })
 
         app.post('/donations', async (req, res) => {
@@ -85,6 +104,8 @@ async function run() {
                 .toArray();
             res.send(result);
         });
+
+
 
 
 
